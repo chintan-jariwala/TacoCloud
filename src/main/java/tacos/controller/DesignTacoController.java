@@ -53,7 +53,7 @@ public class DesignTacoController {
             for (FieldError error : errors.getFieldErrors()) {
                 System.out.println(error.getField());
             }
-            return "design";
+            return "redirect:/design";
         }
 
         log.info("Processing design" + design);
