@@ -15,7 +15,7 @@
 <!--tag::formTag[]-->
 <form method="POST" th:object="${taco}">
     <!--end::all[] -->
-
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
     <span class="validationError"
           th:if="${#fields.hasErrors('ingredients')}"
           th:errors="*{ingredients}">Ingredient Error</span>
@@ -80,6 +80,9 @@
         <button>Submit your taco</button>
     </div>
     <!--tag::closeFormTag[]-->
+</form>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
 </form>
 <!--end::closeFormTag[]-->
 </body>
