@@ -8,9 +8,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 
-
-@Slf4j
 @SpringBootApplication
+@Slf4j
 public class TacoCloudApplication implements FlywayMigrationStrategy {
 
     private static final Integer MAX_FLYWAY_RETRY_ATTEMPTS = 500;
@@ -39,3 +38,4 @@ public class TacoCloudApplication implements FlywayMigrationStrategy {
         }
     }
 }
+
