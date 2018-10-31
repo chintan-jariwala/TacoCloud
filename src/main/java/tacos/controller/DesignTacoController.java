@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,8 +17,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import tacos.entity.Taco;
 import tacos.repository.TacoRepository;
+import tacos.resources.TacoResource;
+import tacos.resources.TacoResourceAssembler;
 
+import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Slf4j
 @RestController
@@ -33,9 +40,13 @@ public class DesignTacoController {
     }
 
     @GetMapping("/recent")
-    public Iterable<Taco> recentTaco() {
+    public Resources<TacoResource> recentTaco() {
         PageRequest pageRequest = PageRequest.of(0, 12, Sort.by("createdAt").descending());
-        return tacoRepository.findAll(pageRequest).getContent();
+        List<Taco> tacoList = tacoRepository.findAll(pageRequest).getContent();
+        List<TacoResource> tacoResources = new TacoResourceAssembler().toResourceList(tacoList);
+        Resources<TacoResource> recentResources = new Resources<>(tacoResources);
+        recentResources.add(linkTo(methodOn(DesignTacoController.class).recentTaco()).withRel("recent_tacos"));
+        return recentResources;
     }
 
     @GetMapping("/{id}")
