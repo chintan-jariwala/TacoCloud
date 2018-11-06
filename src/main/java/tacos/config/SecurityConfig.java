@@ -3,6 +3,7 @@ package tacos.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,18 +30,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/design", "/orders")
-                .access("hasRole('ROLE_USER')")
+                .antMatchers(HttpMethod.OPTIONS).permitAll() // needed for Angular/CORS
+                .antMatchers(HttpMethod.POST, "/api/ingredients").permitAll()
+                .antMatchers("/design", "/orders/**")
+                .permitAll()
+                //.access("hasRole('ROLE_USER')")
+                .antMatchers(HttpMethod.PATCH, "/ingredients").permitAll()
                 .antMatchers("/**").access("permitAll")
-                //end::authorizeRequests[]
 
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/design", true)
+
+                .and()
+                .httpBasic()
+                .realmName("Taco Cloud")
+
                 .and()
                 .logout()
-                .logoutSuccessUrl("/");
+                .logoutSuccessUrl("/")
+
+                .and()
+                .csrf()
+                .ignoringAntMatchers("/h2-console/**", "/ingredients/**", "/design", "/orders/**", "/api/**")
+
+                // Allow pages to be loaded in frames from the same origin; needed for H2-Console
+                .and()
+                .headers()
+                .frameOptions()
+                .sameOrigin()
+        ;
     }
 
     @Bean

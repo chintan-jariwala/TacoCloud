@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import tacos.entity.Order;
+import tacos.jms.OrderMessagingService;
 import tacos.repository.OrderRepository;
 
 import java.util.Optional;
@@ -28,9 +29,12 @@ public class OrderController {
 
     private final OrderRepository orderRepository;
 
+    private final OrderMessagingService orderMessagingService;
+
     @Autowired
-    public OrderController(OrderRepository orderRepository) {
+    public OrderController(OrderRepository orderRepository, OrderMessagingService orderMessagingService) {
         this.orderRepository = orderRepository;
+        this.orderMessagingService = orderMessagingService;
     }
 
     @GetMapping
@@ -42,6 +46,7 @@ public class OrderController {
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public Order postOrder(@RequestBody Order order) {
+        orderMessagingService.sendOrder(order);
         return orderRepository.save(order);
     }
 
