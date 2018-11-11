@@ -17,7 +17,7 @@ public class JMSOrderReceiver implements OrderReceiver {
 
     @Override
     public Order receive(Order order) {
-        return (Order) jmsTemplate.receiveAndConvert("taco.order.queue");
+        return (Order) jmsTemplate.receiveAndConvert("tacocloud.order.queue");
 
     }
 
